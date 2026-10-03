@@ -1,0 +1,60 @@
+name: release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  chart:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install helm
+        run: |
+          bash scripts/install-tools.sh "$RUNNER_TEMP/bin"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
+      - name: Check the tag matches the platform version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          chart="$(awk '/^version:/{print $2; exit}' charts/platform/Chart.yaml)"
+          if [ "$tag" != "$chart" ]; then
+            echo "::error::tag v$tag does not match charts/platform/Chart.yaml ($chart). Set the version, commit it, and re-tag."
+            exit 1
+          fi
+          echo "releasing platform $chart"
+
+      # The gate proves every image reference is PINNED to a version. This proves the
+      # version RESOLVES, which is the one thing that needs the registry. A component
+      # that has not been released yet is caught here rather than at install time.
+      - name: Check the deployed images exist in GHCR
+        run: |
+          for ref in $(helm template platform charts/platform |
+            grep -oE 'ghcr\.io/gobackto-work/[a-z-]+:[A-Za-z0-9._-]+' | sort -u); do
+            if ! docker manifest inspect "$ref" >/dev/null 2>&1; then
+              echo "::error::$ref does not exist. Release that component at that version first."
+              exit 1
+            fi
+            echo "  $ref ok"
+          done
+
+      - name: Package and push
+        run: |
+          helm package charts/platform --destination dist/chart
+          echo "${{ secrets.GITHUB_TOKEN }}" |
+            helm registry login "$REGISTRY" --username "${{ github.actor }}" --password-stdin
+          helm push dist/chart/platform-*.tgz "oci://$REGISTRY/${{ github.repository_owner }}/charts"

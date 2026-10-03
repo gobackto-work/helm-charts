@@ -1,0 +1,124 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "town: the chart's own version and appVersion both name the image it deploys.",
+      "fileMatch": [
+        "charts/platform/charts/town/Chart.yaml"
+      ],
+      "matchStrings": [
+        "^version: (?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)$",
+        "appVersion: \"(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\""
+      ],
+      "depNameTemplate": "ghcr.io/gobackto-work/town",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "description": "town: the platform's dependency declaration must match that chart's version, or Helm reports the dependency as the wrong version.",
+      "fileMatch": [
+        "charts/platform/Chart.yaml"
+      ],
+      "matchStrings": [
+        "\\{name: town, version: (?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\\}"
+      ],
+      "depNameTemplate": "ghcr.io/gobackto-work/town",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "description": "pestilence: the chart's own version and appVersion both name the image it deploys.",
+      "fileMatch": [
+        "charts/platform/charts/pestilence/Chart.yaml"
+      ],
+      "matchStrings": [
+        "^version: (?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)$",
+        "appVersion: \"(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\""
+      ],
+      "depNameTemplate": "ghcr.io/gobackto-work/pestilence-control-plane",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "description": "pestilence: the platform's dependency declaration must match that chart's version, or Helm reports the dependency as the wrong version.",
+      "fileMatch": [
+        "charts/platform/Chart.yaml"
+      ],
+      "matchStrings": [
+        "\\{name: pestilence, version: (?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\\}"
+      ],
+      "depNameTemplate": "ghcr.io/gobackto-work/pestilence-control-plane",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "description": "scarab: the chart's own version and appVersion both name the image it deploys.",
+      "fileMatch": [
+        "charts/platform/charts/scarab/Chart.yaml"
+      ],
+      "matchStrings": [
+        "^version: (?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)$",
+        "appVersion: \"(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\""
+      ],
+      "depNameTemplate": "ghcr.io/gobackto-work/scarab-agent",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "description": "scarab: the platform's dependency declaration must match that chart's version, or Helm reports the dependency as the wrong version.",
+      "fileMatch": [
+        "charts/platform/Chart.yaml"
+      ],
+      "matchStrings": [
+        "\\{name: scarab, version: (?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\\}"
+      ],
+      "depNameTemplate": "ghcr.io/gobackto-work/scarab-agent",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "description": "scarab: the two images pestilence stamps into every workspace. They are full references in a list, not an `image:` block, so the helm-values manager does not see them.",
+      "fileMatch": [
+        "charts/platform/charts/pestilence/values.yaml"
+      ],
+      "matchStrings": [
+        "(?<depName>ghcr\\.io/gobackto-work/scarab-(?:agent|broker)):(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "semver"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "scarab publishes its two images together, so bump them in one PR.",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "/^ghcr\\.io\\/gobackto-work\\/scarab-/"
+      ],
+      "groupName": "scarab images"
+    },
+    {
+      "description": "Every component image is pinned to a version on purpose: the gate fails on a floating tag or an empty one. Do not substitute a digest for the tag.",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "/^ghcr\\.io\\/gobackto-work\\//"
+      ],
+      "pinDigests": false
+    }
+  ]
+}

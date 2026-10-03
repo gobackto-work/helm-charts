@@ -1,0 +1,18 @@
+The platform is installed in three namespaces.
+
+  scarab      the per-workspace brokers
+  pestilence  the control plane
+  town        the management interface
+
+{{ if not (index .Values "scarab" "namespace").create -}}
+{{- end -}}
+
+Before anyone can sign in, two things must exist. Both are cluster-specific, so they
+are scripts rather than chart values:
+
+  town's cluster-setup-scripts/generate-keys.sh    the assertion key pair
+  town's cluster-setup-scripts/create-secrets.sh   the GitHub client and session secrets
+
+Check what is running:
+
+  kubectl get pods -n town -n pestilence -n scarab

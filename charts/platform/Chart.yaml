@@ -1,0 +1,33 @@
+apiVersion: v2
+name: platform
+description: The Pi agent platform — town, pestilence and scarab in one release.
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+home: https://github.com/gobackto-work/helm-charts
+sources:
+  - https://github.com/gobackto-work/town
+  - https://github.com/gobackto-work/pestilence
+  - https://github.com/gobackto-work/scarab
+keywords:
+  - pi
+  - agents
+  - platform
+dependencies:
+  # Declared so Helm accepts them. They are fetched from NOWHERE.
+  #
+  # A directory under charts/ is how Helm finds a subchart, and the declaration is
+  # satisfied by the directory already there -- `helm dependency list` reports all
+  # three as `unpacked`. No `repository` means no file:// path and no OCI reference,
+  # so there is nothing to vendor, lock, or fetch at build or install time.
+  #
+  # The version here must equal that chart's own `version`, or Helm reports the
+  # dependency as the wrong version. Renovate moves both from the image, so they
+  # cannot drift.
+  #
+  # The components version independently: town 1.2.0 can run against pestilence 1.1.0.
+  # What this chart depends on is the IMAGES, which each component chart names in its
+  # own values.yaml.
+  - {name: scarab, version: 1.0.1}
+  - {name: pestilence, version: 1.0.0}
+  - {name: town, version: 1.0.1}

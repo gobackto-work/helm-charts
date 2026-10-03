@@ -1,0 +1,45 @@
+# Platform values. Each top-level key is a subchart, so a value here overrides that
+# chart's own values.yaml. Everything not set here comes from the subchart defaults,
+# including the image versions.
+#
+# The three components version independently. town 1.2.0 can run against pestilence
+# 1.1.0; nothing enforces a shared number. To move one, edit that component chart's
+# values.yaml and bump its chart version.
+#
+# The namespaces are listed because the charts reference each other's by name, and a
+# rename in one alone is a silent failure: a NetworkPolicy that matches nothing looks
+# exactly like one that passes.
+
+scarab:
+  namespace:
+    name: scarab
+
+pestilence:
+  namespace:
+    name: pestilence
+  # Where its NetworkPolicy admits ingress from, and where the assertion public key
+  # ConfigMap lives.
+  townNamespace:
+    name: town
+  # The namespace it binds the broker Role in.
+  scarabNamespace:
+    name: scarab
+  config:
+    hostnameSuffix: gobackto.work
+  edge:
+    certificate:
+      dnsNames:
+        - "*.gobackto.work"
+        - gobackto.work
+    issuers:
+      dnsZones:
+        - gobackto.work
+
+town:
+  namespace:
+    name: town
+  config:
+    townUrl: https://town.gobackto.work
+    githubOrg: gobackto-work
+  ingress:
+    host: town.gobackto.work
