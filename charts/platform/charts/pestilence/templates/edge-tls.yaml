@@ -62,7 +62,11 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: wildcard
+  # Named after the secret it fills rather than just `wildcard`. cert-manager refuses a
+  # Certificate whose secretName is already issued to a different Certificate, so a
+  # name that collides with an existing object is a failed upgrade rather than an
+  # adoption. Deriving it from the secret name keeps the two in step.
+  name: {{ .Values.edge.certificate.secretName | trimSuffix "-tls" }}
   namespace: {{ $tns }}
   labels:
     {{- include "pestilence.labels" . | nindent 4 }}

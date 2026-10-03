@@ -41,5 +41,10 @@ town:
   config:
     townUrl: https://town.gobackto.work
     githubOrg: gobackto-work
+    # The OAuth app's client id. Not a secret: it is in the redirect URL the browser is
+    # sent to. It belongs here rather than in cluster-setup-scripts because EVERY
+    # upgrade must supply it -- Helm recomputes values from the chart plus the flags it
+    # is given, so a `--set` on one install is gone on the next.
+    githubClientId: Ov23liUpACHa45rpEqJS
   ingress:
     host: town.gobackto.work
