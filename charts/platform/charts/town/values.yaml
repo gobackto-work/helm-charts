@@ -10,7 +10,7 @@ image:
   # The image version this chart deploys. Renovate keeps it current from GHCR, and
   # keeps appVersion with it. The chart's own `version` is separate: it moves when the
   # chart changes, and the platform declares it.
-  tag: "1.0.1"
+  tag: "1.1.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
