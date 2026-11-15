@@ -19,6 +19,9 @@ networkPolicy:
   # The broker's serving port. The workspace label on the caller's namespace is set
   # by pestilence and cannot be added by a tenant.
   brokerPort: 8443
+  # The control plane namespace used for run reports.
+  controlPlaneNamespace: pestilence
+  controlPlanePort: 8080
 
 # Platform-specific pod invariants that Pod Security Admission cannot express:
 # serviceAccountName, automountServiceAccountToken, nodeName, runtimeClassName, and

@@ -5,7 +5,7 @@
 # needs, so both directions are default-deny with a named allow:
 #
 #   ingress  its own workspace's root agent, on the broker port
-#   egress   cluster DNS, and the Kubernetes API server
+#   egress   cluster DNS, the Kubernetes API server, and the control plane
 #
 # Egress is a CiliumNetworkPolicy for the API server, for the same reason as
 # pestilence's: kube-proxy DNATs the `kubernetes` Service to the node, so an ipBlock
@@ -66,6 +66,26 @@ spec:
           port: 53
         - protocol: TCP
           port: 53
+---
+# The reporter reaches the control plane by namespace, not by its Service IP.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-reporting-control-plane
+  namespace: {{ $ns }}
+  labels:
+    {{- include "scarab.labels" . | nindent 4 }}
+spec:
+  podSelector: {}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.networkPolicy.controlPlaneNamespace }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.networkPolicy.controlPlanePort }}
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy

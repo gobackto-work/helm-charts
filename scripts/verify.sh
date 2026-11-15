@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # The verification gate for the platform charts.
+# Install the Python test dependency: python -m pip install -r scripts/requirements.txt
 #
 #   1. STATELESS. No caches. The component charts live in charts/platform/charts/, so
 #      there is nothing to fetch and the gate proves what `helm package` will publish.
@@ -112,6 +113,7 @@ for component in town pestilence scarab; do
 	check "helm lint ($component, standalone)" helm lint "$CHART/charts/$component"
 done
 check "helm template (platform)" helm template platform "$CHART"
+check "rendered chart contracts" python scripts/test_chart_contract.py
 
 step "pinned images"
 # The components version independently, so nothing enforces a shared number. What IS

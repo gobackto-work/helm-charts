@@ -31,8 +31,8 @@ serviceAccount:
   automountServiceAccountToken: false
 
 config:
-  # The control plane. town is the only component that talks to it.
-  pestilenceUrl: http://control-plane.pestilence.svc.cluster.local:8080
+  # The default Service name and namespace from the pestilence chart.
+  pestilenceUrl: http://pestilence.pestilence.svc:8080
   # Must match the OAuth app's homepage and callback URL EXACTLY. A mismatch is the
   # most common way the sign-in flow fails, and GitHub does not name the value it wanted.
   townUrl: https://town.gobackto.work

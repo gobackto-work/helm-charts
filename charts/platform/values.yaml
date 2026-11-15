@@ -13,6 +13,8 @@
 scarab:
   namespace:
     name: scarab
+  networkPolicy:
+    controlPlaneNamespace: pestilence
 
 pestilence:
   namespace:

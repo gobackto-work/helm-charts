@@ -2,7 +2,7 @@ apiVersion: v2
 name: scarab
 description: The tenant/agent side of the Pi agent platform — broker namespace and tenant pod policy.
 type: application
-version: 1.0.1
+version: 1.0.2
 appVersion: "1.0.1"
 home: https://github.com/gobackto-work/scarab
 sources:
