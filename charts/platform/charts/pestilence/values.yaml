@@ -11,7 +11,7 @@ image:
   repository: ghcr.io/gobackto-work/pestilence-control-plane
   # The image version this chart deploys. Renovate keeps it current from GHCR, and
   # keeps appVersion with it. The chart's own `version` moves separately.
-  tag: "1.0.0"
+  tag: "1.1.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -54,8 +54,8 @@ workspaceImages:
   # The images pestilence stamps into every workspace it creates. These are scarab's
   # images, and they version independently of pestilence: move them when scarab
   # releases, which may be on a different schedule.
-  agent: ghcr.io/gobackto-work/scarab-agent:1.0.1
-  broker: ghcr.io/gobackto-work/scarab-broker:1.0.1
+  agent: ghcr.io/gobackto-work/scarab-agent:1.1.0
+  broker: ghcr.io/gobackto-work/scarab-broker:1.1.0
 
 assertion:
   # The PUBLIC half of the assertion key pair, made by town's
