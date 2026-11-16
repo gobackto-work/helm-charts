@@ -1,0 +1,43 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgres-clients
+  namespace: {{ .Values.namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: platform-postgres
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.pestilenceNamespace }}
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: pestilence
+      ports:
+        - protocol: TCP
+          port: 5432
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-postgres-egress
+  namespace: {{ .Values.pestilenceNamespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: pestilence
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.namespace }}
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: platform-postgres
+      ports:
+        - protocol: TCP
+          port: 5432

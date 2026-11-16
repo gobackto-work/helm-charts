@@ -3,6 +3,9 @@ kind: PersistentVolumeClaim
 metadata:
   name: pestilence-data
   namespace: {{ include "pestilence.namespace" . }}
+  annotations:
+    # The old database remains available for rollback.
+    helm.sh/resource-policy: keep
   labels:
     {{- include "pestilence.labels" . | nindent 4 }}
 spec:

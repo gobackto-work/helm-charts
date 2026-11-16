@@ -108,6 +108,8 @@ fi
 
 step "chart"
 check "helm lint (platform)" helm lint "$CHART"
+check "helm lint (postgres)" helm lint charts/postgres
+check "helm template (postgres)" helm template platform-postgres charts/postgres
 for component in town pestilence scarab; do
 	check "helm lint ($component, standalone)" helm lint "$CHART/charts/$component"
 done

@@ -1,0 +1,45 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: postgres-selfsigned
+  namespace: {{ .Values.namespace }}
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: postgres-ca
+  namespace: {{ .Values.namespace }}
+spec:
+  isCA: true
+  commonName: platform-postgres-ca
+  secretName: postgres-ca
+  duration: 87600h
+  renewBefore: 720h
+  issuerRef:
+    name: postgres-selfsigned
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: postgres-ca
+  namespace: {{ .Values.namespace }}
+spec:
+  ca:
+    secretName: postgres-ca
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: postgres-server
+  namespace: {{ .Values.namespace }}
+spec:
+  secretName: postgres-server-tls
+  dnsNames:
+    - postgres.{{ .Values.namespace }}.svc
+    - postgres.{{ .Values.namespace }}.svc.cluster.local
+  issuerRef:
+    name: postgres-ca
+    kind: Issuer
