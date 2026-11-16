@@ -2,7 +2,7 @@ apiVersion: v2
 name: platform
 description: The Pi agent platform — town, pestilence and scarab in one release.
 type: application
-version: 1.0.2
+version: 1.0.3
 appVersion: "1.1.0"
 home: https://github.com/gobackto-work/helm-charts
 sources:
@@ -29,5 +29,5 @@ dependencies:
   # What this chart depends on is the IMAGES, which each component chart names in its
   # own values.yaml.
   - {name: scarab, version: 1.1.0}
-  - {name: pestilence, version: 1.1.0}
+  - {name: pestilence, version: 1.2.0}
   - {name: town, version: 1.1.0}

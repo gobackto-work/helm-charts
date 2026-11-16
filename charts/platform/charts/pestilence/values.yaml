@@ -11,7 +11,7 @@ image:
   repository: ghcr.io/gobackto-work/pestilence-control-plane
   # The image version this chart deploys. Renovate keeps it current from GHCR, and
   # keeps appVersion with it. The chart's own `version` moves separately.
-  tag: "1.1.0"
+  tag: "1.2.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -66,6 +66,10 @@ assertion:
   create: false
   # The PEM public key. Required when create is true and the ConfigMap is absent.
   publicKey: ""
+
+postgres:
+  existingSecret: pestilence-postgres
+  caConfigMap: postgres-ca
 
 persistence:
   # Named explicitly. openebs-hostpath is not the cluster's default StorageClass, so

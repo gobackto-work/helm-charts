@@ -7,10 +7,7 @@ metadata:
     {{- include "pestilence.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
-  # Recreate, and one replica: the store is SQLite on a ReadWriteOnce volume, so a
-  # second pod cannot mount it -- and two reconcilers would both be applying the
-  # same workspaces, which the drift sweep makes actively harmful rather than
-  # merely wasteful.
+  # Run one reconciler. The control plane has no leader election.
   strategy:
     type: Recreate
   selector:
@@ -34,7 +31,6 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - -addr=:8080
-            - -db=/var/lib/pestilence/pestilence.db
             # There is deliberately no -owner. The owner of a workspace comes from
             # the verified assertion and from nothing else.
             - -hostname-suffix={{ .Values.config.hostnameSuffix }}
@@ -48,6 +44,11 @@ spec:
             # the pod authenticates with its ServiceAccount token and the mounted CA,
             # and no kubeconfig ever exists as a file to leak.
           env:
+            - name: PESTILENCE_POSTGRES_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.existingSecret }}
+                  key: url
             - name: PESTILENCE_BROKER_IMAGE
               value: {{ include "pestilence.brokerImage" . | quote }}
             - name: PESTILENCE_AGENT_IMAGE
@@ -73,17 +74,18 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - name: data
-              mountPath: /var/lib/pestilence
+            - name: postgres-ca
+              mountPath: /var/run/pestilence-postgres
+              readOnly: true
             - name: tmp
               mountPath: /tmp
             - name: assertion-pubkey
               mountPath: /var/run/pestilence
               readOnly: true
       volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: pestilence-data
+        - name: postgres-ca
+          configMap:
+            name: {{ .Values.postgres.caConfigMap }}
         - name: tmp
           emptyDir: {}
         # Public, so a ConfigMap rather than a Secret. Paired with the private key in
